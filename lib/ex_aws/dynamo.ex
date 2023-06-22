@@ -637,25 +637,12 @@ defmodule ExAws.Dynamo do
   end
 
   @doc "Put item in table"
-  @type put_item_opts :: [
-          {:condition_expression, binary}
-          | {:expression_attribute_names, expression_attribute_names_vals}
-          | {:expression_attribute_values, expression_attribute_values_vals}
-          | {:return_consumed_capacity, return_consumed_capacity_vals}
-          | {:return_item_collection_metrics, return_item_collection_metrics_vals}
-          | {:return_values, return_values_vals}
-        ]
   @spec put_item(table_name :: table_name, record :: map()) :: JSON.t()
-  @spec put_item(table_name :: table_name, record :: map(), opts :: put_item_opts) ::
-          JSON.t()
-  def put_item(name, record, opts \\ []) do
-    data =
-      opts
-      |> build_opts()
-      |> Map.merge(%{
-        "TableName" => name,
-        "Item" => Dynamo.Encoder.encode_root(record)
-      })
+  def put_item(name, record) do
+    data = %{
+      "TableName" => name,
+      "Item" => record
+    }
 
     request(:put_item, data)
   end
