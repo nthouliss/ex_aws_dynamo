@@ -648,7 +648,7 @@ defmodule ExAws.Dynamo do
   @spec put_item(table_name :: table_name, record :: map()) :: JSON.t()
   @spec put_item(table_name :: table_name, record :: map(), opts :: put_item_opts) ::
           JSON.t()
-  def put_item(name, record, opts \\ []) do
+  def put_item(name, record, opts) do
     data =
       opts
       |> build_opts()
@@ -656,6 +656,17 @@ defmodule ExAws.Dynamo do
         "TableName" => name,
         "Item" => Dynamo.Encoder.encode_root(record)
       })
+
+    request(:put_item, data)
+  end
+
+  @doc "Put item in table"
+  @spec put_item(table_name :: table_name, record :: map()) :: JSON.t()
+  def put_item(name, record) do
+    data = %{
+      "TableName" => name,
+      "Item" => record
+    }
 
     request(:put_item, data)
   end
