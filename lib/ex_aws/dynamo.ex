@@ -326,8 +326,10 @@ defmodule ExAws.Dynamo do
 
     data =
       %{
-        "GlobalSecondaryIndexes" => (opts[:global_indexes] || []) |> Enum.map(&camelize_keys(&1, deep: true)),
-        "LocalSecondaryIndexes" => (opts[:local_indexes] || []) |> Enum.map(&camelize_keys(&1, deep: true))
+        "GlobalSecondaryIndexes" =>
+          (opts[:global_indexes] || []) |> Enum.map(&camelize_keys(&1, deep: true)),
+        "LocalSecondaryIndexes" =>
+          (opts[:local_indexes] || []) |> Enum.map(&camelize_keys(&1, deep: true))
       }
       |> Enum.reduce(data, fn
         {_, []}, data ->
@@ -637,14 +639,6 @@ defmodule ExAws.Dynamo do
   end
 
   @doc "Put item in table"
-  @type put_item_opts :: [
-          {:condition_expression, binary}
-          | {:expression_attribute_names, expression_attribute_names_vals}
-          | {:expression_attribute_values, expression_attribute_values_vals}
-          | {:return_consumed_capacity, return_consumed_capacity_vals}
-          | {:return_item_collection_metrics, return_item_collection_metrics_vals}
-          | {:return_values, return_values_vals}
-        ]
   @spec put_item(table_name :: table_name, record :: map()) :: JSON.t()
   @spec put_item(table_name :: table_name, record :: map(), opts :: put_item_opts) ::
           JSON.t()
@@ -859,19 +853,22 @@ defmodule ExAws.Dynamo do
           {:condition_expression, binary}
           | {:expression_attribute_names, expression_attribute_names_vals}
           | {:expression_attribute_values, expression_attribute_values_vals}
-          | {:return_values_on_condition_check_failure, return_values_on_condition_check_failure_vals}
+          | {:return_values_on_condition_check_failure,
+             return_values_on_condition_check_failure_vals}
         ]
 
   @type transact_update_item_opts :: [
           {:condition_expression, binary}
           | {:expression_attribute_names, expression_attribute_names_vals}
           | {:expression_attribute_values, expression_attribute_values_vals}
-          | {:return_values_on_condition_check_failure, return_values_on_condition_check_failure_vals}
+          | {:return_values_on_condition_check_failure,
+             return_values_on_condition_check_failure_vals}
           | {:update_expression, binary}
         ]
 
   @type transact_write_item ::
-          {:condition_check, {table_name :: binary, key :: primary_key, transact_standard_item_opts}}
+          {:condition_check,
+           {table_name :: binary, key :: primary_key, transact_standard_item_opts}}
           | {:delete, {table_name :: binary, key :: primary_key, transact_standard_item_opts}}
           | {:put, {table_name :: binary, item :: map(), transact_standard_item_opts}}
           | {:update, {table_name :: binary, key :: primary_key, transact_update_item_opts}}
@@ -998,7 +995,9 @@ defmodule ExAws.Dynamo do
   # Cancelled "transactions" are specific to DynamoDB and may include
   # additional information, so include it in the result:
   defp error_parser(
-         {:error, {:aws_unhandled, "TransactionCanceledException" = type, message, %{"CancellationReasons" => reasons}}}
+         {:error,
+          {:aws_unhandled, "TransactionCanceledException" = type, message,
+           %{"CancellationReasons" => reasons}}}
        ) do
     {:error, {type, message, reasons}}
   end
